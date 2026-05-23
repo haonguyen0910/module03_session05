@@ -9,6 +9,7 @@ import com.example.coursemanagement.models.dto.response.PageResponse;
 import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.InstructorRepository;
 import com.example.coursemanagement.services.CourseService;
+import com.example.coursemanagement.utils.CourseStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -94,6 +95,41 @@ public class CourseServiceImpl implements CourseService {
         response.setId(course.getId());
         response.setTitle(course.getTitle());
         response.setStatus(course.getStatus());
+
+        return response;
+    }
+
+    @Override
+    public PageResponse<CourseResponse> getPagedCoursesByStatus(int page, int size, String sortBy, Sort.Direction direction,CourseStatus status) {
+        if (page < 0) {
+            page = 0;
+        }
+
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "id";
+        }
+
+        Sort sort = Sort.by(direction, sortBy);
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Course> coursePage = courseRepository.findAllByStatus(status,pageable);
+
+        Page<CourseResponse> responsePage = coursePage.map(this::mapToResponse);
+
+        PageResponse<CourseResponse> response = new PageResponse<>();
+
+        response.setItems(responsePage.getContent());
+
+        response.setPage(responsePage.getNumber());
+
+        response.setSize(responsePage.getSize());
+
+        response.setTotalItems(responsePage.getTotalElements());
+
+        response.setTotalPages(responsePage.getTotalPages());
+
+        response.setLast(responsePage.isLast() );
 
         return response;
     }
