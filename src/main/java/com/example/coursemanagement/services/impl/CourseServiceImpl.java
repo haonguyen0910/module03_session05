@@ -5,6 +5,7 @@ import com.example.coursemanagement.models.Instructor;
 import com.example.coursemanagement.models.dto.request.CourseCreateRequest;
 import com.example.coursemanagement.models.dto.request.CourseUpdateRequest;
 import com.example.coursemanagement.models.dto.response.CourseResponse;
+import com.example.coursemanagement.models.dto.response.PageResponse;
 import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.InstructorRepository;
 import com.example.coursemanagement.services.CourseService;
@@ -52,10 +53,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Page<CourseResponse> getPagedCourses(int page, int size, String sortBy, Sort.Direction direction) {
+    public PageResponse<CourseResponse> getPagedCourses(int page, int size, String sortBy, Sort.Direction direction) {
         if (page < 0) {
             page = 0;
         }
+
         if (sortBy == null || sortBy.isBlank()) {
             sortBy = "id";
         }
@@ -66,7 +68,23 @@ public class CourseServiceImpl implements CourseService {
 
         Page<Course> coursePage = courseRepository.findAll(pageable);
 
-        return coursePage.map(this::mapToResponse);
+        Page<CourseResponse> responsePage = coursePage.map(this::mapToResponse);
+
+        PageResponse<CourseResponse> pageResponse = new PageResponse<>();
+
+        pageResponse.setItems(responsePage.getContent());
+
+        pageResponse.setPage(responsePage.getNumber());
+
+        pageResponse.setSize(responsePage.getSize());
+
+        pageResponse.setTotalItems(responsePage.getTotalElements());
+
+        pageResponse.setTotalPages(responsePage.getTotalPages());
+
+        pageResponse.setLast(responsePage.isLast());
+
+        return pageResponse;
     }
 
     private CourseResponse mapToResponse(Course course) {

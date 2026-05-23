@@ -4,6 +4,7 @@ import com.example.coursemanagement.models.dto.request.CourseCreateRequest;
 import com.example.coursemanagement.models.dto.request.CourseUpdateRequest;
 import com.example.coursemanagement.models.dto.response.ApiResponse;
 import com.example.coursemanagement.models.dto.response.CourseResponse;
+import com.example.coursemanagement.models.dto.response.PageResponse;
 import com.example.coursemanagement.services.CourseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -22,11 +23,11 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<CourseResponse>>> getCourses(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String sortBy,@RequestParam(defaultValue = "DESC") Sort.Direction direction) {
+    public ResponseEntity<ApiResponse<PageResponse<CourseResponse>>> getCourses(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String sortBy, @RequestParam(defaultValue = "DESC") Sort.Direction direction) {
 
-        Page<CourseResponse> result = courseService.getPagedCourses(page, size, sortBy, direction);
+        PageResponse<CourseResponse> result = courseService.getPagedCourses(page, size, sortBy, direction);
 
-        ApiResponse<Page<CourseResponse>> response = new ApiResponse<>(true, "Ok", result);
+        ApiResponse<PageResponse<CourseResponse>> response = new ApiResponse<>(true,"Ok", result);
 
         return ResponseEntity.ok(response);
     }
