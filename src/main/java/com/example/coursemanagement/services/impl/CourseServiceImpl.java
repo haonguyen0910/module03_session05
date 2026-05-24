@@ -5,6 +5,7 @@ import com.example.coursemanagement.models.Instructor;
 import com.example.coursemanagement.models.dto.request.CourseCreateRequest;
 import com.example.coursemanagement.models.dto.request.CourseUpdateRequest;
 import com.example.coursemanagement.models.dto.response.CourseResponse;
+import com.example.coursemanagement.models.dto.response.CourseResponseV2;
 import com.example.coursemanagement.models.dto.response.PageResponse;
 import com.example.coursemanagement.repositories.CourseRepository;
 import com.example.coursemanagement.repositories.InstructorRepository;
@@ -130,6 +131,39 @@ public class CourseServiceImpl implements CourseService {
         response.setTotalPages(responsePage.getTotalPages());
 
         response.setLast(responsePage.isLast() );
+
+        return response;
+    }
+
+    @Override
+    public PageResponse<CourseResponseV2> getPagedCoursesByStatusV2(int page, int size, String sortBy, Sort.Direction direction, CourseStatus status) {
+        if (page < 0) {
+            page = 0;
+        }
+
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "id";
+        }
+
+        Sort sort = Sort.by(direction, sortBy);
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<CourseResponseV2> responsePage = courseRepository.findAllByStatusV2(status, pageable);
+
+        PageResponse<CourseResponseV2> response = new PageResponse<>();
+
+        response.setItems(responsePage.getContent());
+
+        response.setPage(responsePage.getNumber());
+
+        response.setSize(responsePage.getSize());
+
+        response.setTotalItems(responsePage.getTotalElements());
+
+        response.setTotalPages(responsePage.getTotalPages());
+
+        response.setLast(responsePage.isLast());
 
         return response;
     }

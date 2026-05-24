@@ -4,6 +4,7 @@ import com.example.coursemanagement.models.dto.request.CourseCreateRequest;
 import com.example.coursemanagement.models.dto.request.CourseUpdateRequest;
 import com.example.coursemanagement.models.dto.response.ApiResponse;
 import com.example.coursemanagement.models.dto.response.CourseResponse;
+import com.example.coursemanagement.models.dto.response.CourseResponseV2;
 import com.example.coursemanagement.models.dto.response.PageResponse;
 import com.example.coursemanagement.services.CourseService;
 import com.example.coursemanagement.utils.CourseStatus;
@@ -38,6 +39,16 @@ public class CourseController {
         PageResponse<CourseResponse> result = courseService.getPagedCoursesByStatus(page, size, sortBy, direction, status);
 
         ApiResponse<PageResponse<CourseResponse>> response = new ApiResponse<>(true,"Ok", result);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/v2")
+    public ResponseEntity<ApiResponse<PageResponse<CourseResponseV2>>> getCoursesV2(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String sortBy, @RequestParam(defaultValue = "DESC") Sort.Direction direction, @RequestParam(defaultValue = "ACTIVE") CourseStatus status) {
+
+        PageResponse<CourseResponseV2> result = courseService.getPagedCoursesByStatusV2(page, size, sortBy, direction, status);
+
+        ApiResponse<PageResponse<CourseResponseV2>> response = new ApiResponse<>(true,"Ok", result);
 
         return ResponseEntity.ok(response);
     }
